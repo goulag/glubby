@@ -125,12 +125,24 @@ bool Glubby::layout(const QString & layoutName,
 
     QJsonObject jsonGraph;
 
+    QJsonObject jsonNodes;
     forall_nodes(n, *_G ) {
         QJsonObject json;
         json["x"] = _GA->x(n);
         json["y"] = _GA->y(n);
-        jsonGraph[_GA->label(n).c_str()] = json;
-    }
+        jsonNodes[_GA->label(n).c_str()] = json;
+    }    
+    jsonGraph["nodes"] = jsonNodes;
+
+    QJsonObject jsonBbox;
+    ogdf::DRect boundingBox = _GA->boundingBox();
+    ogdf::DPoint p1 = boundingBox.p1();
+    ogdf::DPoint p2 = boundingBox.p2();
+    jsonBbox["x1"] = p1.m_x;
+    jsonBbox["y1"] = p1.m_y;
+    jsonBbox["x2"] = p2.m_x;
+    jsonBbox["y2"] = p2.m_y;
+    jsonGraph["bbox"] = jsonBbox;
 
     QJsonDocument jsonDoc(jsonGraph);
 
